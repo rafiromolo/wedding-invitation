@@ -29,6 +29,16 @@ class DatabaseSeeder extends Seeder
 
         $invitation = Invitation::factory()->for($client)->create([
             'slug' => 'demo-pernikahan',
+            'template' => 'jawa',
+            'event_data' => [
+                'greeting' => 'Sugeng Rawuh',
+                'bride' => ['name' => 'Nancy', 'full_name' => 'Nancy Wheeler', 'parents' => 'Putri dari Bapak Ted Wheeler & Ibu Karen Wheeler'],
+                'groom' => ['name' => 'Jonathan', 'full_name' => 'Jonathan Byers', 'parents' => 'Putra dari Bapak Lonnie Byers & Ibu Joyce Byers'],
+                'events' => [
+                    ['name' => 'Akad', 'starts_at' => '2026-12-12 08:00', 'venue' => 'Starcourt Mall', 'address' => 'Jl. Hawkins Utara No. 21', 'maps_url' => 'https://maps.google.com/...'],
+                    ['name' => 'Resepsi', 'starts_at' => '2026-12-12 11:00', 'venue' => 'Starcourt Mall', 'address' => 'Jl. Hawkins Utara No. 21', 'maps_url' => 'https://maps.google.com/...'],
+                ],
+            ]
         ]);
 
         $guests = Guest::factory()->count(50)->for($invitation)->create();

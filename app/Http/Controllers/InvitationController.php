@@ -10,6 +10,8 @@ use Illuminate\Support\Str;
 
 class InvitationController extends Controller
 {
+    private const TEMPLATES = ['classic', 'jawa'];
+
     public function show(Request $request, Invitation $invitation, ?string $token = null): Response
     {
         if ($invitation->expires_at && $invitation->expires_at->isPast()) {
@@ -22,7 +24,11 @@ class InvitationController extends Controller
             $this->recordView($guest, $request);
         }
 
-        return $this->withSafeHeaders(response()->view('invitation.show', [
+        $template = in_array($invitation->template, self::TEMPLATES, true)
+            ? $invitation->template
+            : 'classic';
+        
+        return $this->withSafeHeaders(response()->view("invitation.templates.{$template}", [
             'invitation' => $invitation,
             'guest' => $guest,
         ]));

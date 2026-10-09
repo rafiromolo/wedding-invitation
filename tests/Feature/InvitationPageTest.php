@@ -126,4 +126,41 @@ class InvitationPageTest extends TestCase
 
         $this->assertDatabaseCount('guest_views', 0);
     }
+
+    public function test_template_jawa_menampilkan_nama_tamu_dan_acara(): void
+    {
+        $invitation = Invitation::factory()->create([
+            'template' => 'jawa',
+            'event_data' => [
+                'bride' => ['name' => 'Sekar', 'full_name' => 'Sekar Ayu'],
+                'groom' => ['name' => 'Bima', 'full_name' => 'Bima Aditya'],
+                'events' => [['name' => 'Resepsi', 'venue' => 'Gedung A']],
+            ],
+        ]);
+        $guest = Guest::factory()->for($invitation)->create(['name' => 'Rafi Maulana']);
+
+        $this->get("/i/{$invitation->slug}/{$guest->token}")
+            ->assertOk()
+            ->assertSee('Rafi Maulana')
+            ->assertSee('Resepsi');
+    }
+
+    public function test_tautan_peta_non_https_tidak_dirender(): void
+    {
+        $invitation = Invitation::factory()->create([
+            'template' => 'jawa',
+            'event_data' => ['events' => [['name' => 'Resepsi', 'maps_url' => 'javascript:alert(1)']]],
+        ]);
+
+        $this->get("/i/{$invitation->slug}")
+            ->assertOk()
+            ->assertDontSee('javascript:alert(1)', false);
+    }
+
+    public function test_template_tidak_dikenal_memakai_classic(): void
+    {
+        $invitation = Invitation::factory()->create(['template' => '../../rahasia']);
+
+        $this->get("/i/{$invitation->slug}")->assertOk();
+    }
 }
